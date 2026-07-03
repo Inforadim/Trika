@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trika">
+<meta name="theme-color" content="#0a0a14">
+<title>Trika — Kašmírský šivaismus: filozofie, praxe, benefity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a14;
+  --panel:#131224;
+  --panel2:#1a1930;
+  --line:#2c2a45;
+  --bone:#eae8f0;
+  --ash:#8f8ba3;
+  --siva:#e9e7f2;
+  --sakti:#e0452c;
+  --sakti-soft:#a03322;
+  --gold:#d9a441;
+  --blue:#8fb4d9;
+  --void:#050510;
+  --display:'Cormorant Garamond', Georgia, serif;
+  --body:'Karla', 'Segoe UI', system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--bone);font-family:var(--body);font-weight:300;overflow:hidden;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none;overscroll-behavior:none;
+  background-image:radial-gradient(ellipse 90% 70% at 30% 40%, rgba(90,80,160,.10), transparent 60%),
+                   radial-gradient(ellipse 55% 45% at 80% 18%, rgba(224,69,44,.07), transparent 65%);
+}
+.app{height:100vh;height:100dvh;display:flex;flex-direction:column}
+header{display:flex;align-items:baseline;justify-content:space-between;
+  padding:18px 28px 10px;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--display);font-size:1.35rem;letter-spacing:.06em}
+.brand em{color:var(--sakti);font-style:normal}
+.kolo-label{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ash)}
+.progress{display:flex;gap:3px;padding:10px 28px 0}
+.seg{height:3px;flex:1;background:#232138;border-radius:2px;transition:background .4s}
+.seg.done{background:var(--sakti-soft)}
+.seg.now{background:var(--sakti);box-shadow:0 0 8px rgba(224,69,44,.7)}
+main{flex:1;display:grid;grid-template-columns:minmax(340px,46%) 1fr;min-height:0}
+.stage{display:flex;align-items:center;justify-content:center;position:relative;
+  border-right:1px solid var(--line);padding:12px;cursor:pointer}
+svg{max-width:100%;max-height:100%}
+.content{padding:34px 44px;overflow-y:auto;min-height:0;
+  -webkit-user-select:text;user-select:text;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;justify-content:center}
+.eyebrow{font-size:.7rem;letter-spacing:.32em;text-transform:uppercase;color:var(--ash);margin-bottom:14px}
+.eyebrow .num{color:var(--sakti);font-weight:600;margin-right:10px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(1.7rem,3.2vw,2.7rem);line-height:1.08;margin-bottom:4px}
+.subtitle{font-family:var(--display);font-style:italic;color:var(--gold);font-size:1.12rem;margin-bottom:20px}
+.block{margin-bottom:17px;max-width:63ch}
+.block h3{font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;font-weight:600;color:var(--ash);margin-bottom:6px}
+.block h3.f{color:var(--sakti)}
+.block h3.g{color:var(--gold)}
+.block h3.p{color:var(--blue)}
+.block h3.t{color:var(--siva)}
+.block p{font-size:.96rem;line-height:1.6;color:#d9d5e2}
+.meta{display:flex;gap:26px;flex-wrap:wrap;margin:4px 0 18px;padding:12px 16px;
+  border:1px solid var(--line);border-left:2px solid var(--gold);border-radius:4px;background:rgba(217,164,65,.04)}
+.meta div{font-size:.8rem;color:var(--ash)}
+.meta b{display:block;color:var(--gold);font-size:.95rem;font-weight:600}
+.hint-x{margin-top:6px;font-size:.78rem;color:var(--ash)}
+.hint-x kbd,.hint-x b{color:var(--gold)}
+kbd{display:inline-block;border:1px solid #3f3c60;border-bottom-width:2px;border-radius:4px;
+  padding:1px 7px;font-family:var(--body);font-size:.72rem;color:var(--bone);margin-right:5px;background:#1c1a32}
+.overlay{position:fixed;inset:0;background:rgba(5,5,16,.9);backdrop-filter:blur(5px);
+  display:none;align-items:center;justify-content:center;z-index:50;padding:4vh 4vw}
+.overlay.open{display:flex}
+.overlay-card{background:var(--panel);border:1px solid var(--line);border-top:2px solid var(--sakti);
+  max-width:760px;max-height:88vh;overflow-y:auto;padding:40px 48px;border-radius:4px;
+  -webkit-user-select:text;user-select:text;-webkit-overflow-scrolling:touch}
+.overlay-card h2{font-family:var(--display);font-weight:500;font-size:1.9rem;margin-bottom:18px}
+.overlay-card p{font-size:.96rem;line-height:1.7;color:#d9d5e2;margin-bottom:14px}
+.overlay-card p strong{color:var(--gold);font-weight:600}
+.ov-close-btn{display:inline-block;margin-top:16px;background:var(--panel2);border:1px solid var(--line);
+  color:var(--bone);padding:12px 26px;border-radius:6px;font-family:var(--body);font-size:.95rem;cursor:pointer;min-height:44px}
+.ov-close-btn:hover{border-color:var(--sakti);color:var(--sakti)}
+.overlay-close{margin-top:8px;font-size:.78rem;color:var(--ash)}
+footer{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:12px 28px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);flex-wrap:wrap}
+.keys{display:flex;gap:18px;flex-wrap:wrap;font-size:.76rem;color:var(--ash)}
+.gestures{display:none;font-size:.74rem;color:var(--ash);line-height:1.5}
+.gestures b{color:var(--gold);font-weight:600}
+.state{font-size:.74rem;letter-spacing:.22em;text-transform:uppercase}
+.state.run{color:var(--sakti)}
+.state.pause{color:var(--ash)}
+.btns{display:flex;gap:8px}
+.btns button{background:var(--panel2);border:1px solid var(--line);color:var(--bone);
+  padding:6px 14px;border-radius:6px;font-family:var(--body);font-size:.85rem;cursor:pointer;min-height:44px;min-width:44px}
+.btns button:hover{border-color:var(--sakti);color:var(--sakti)}
+.btns button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@keyframes spanda{0%,100%{transform:scale(1);opacity:.92}50%{transform:scale(1.04);opacity:1}}
+.pulse{animation:spanda 7s ease-in-out infinite;transform-origin:center}
+.paused .pulse{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}}
+@media (max-width:860px), (pointer:coarse) and (max-width:1100px){
+  main{grid-template-columns:1fr;grid-template-rows:34vh 1fr}
+  .stage{border-right:none;border-bottom:1px solid var(--line)}
+  .content{padding:20px 22px 30px;justify-content:flex-start}
+  h1{font-size:1.6rem}.subtitle{font-size:1rem;margin-bottom:14px}
+  .block p{font-size:.93rem}
+  .meta{gap:16px;padding:10px 12px}
+  .overlay{padding:2vh 3vw}.overlay-card{padding:26px 22px;max-height:92vh}
+  .keys{display:none}.gestures{display:block}
+  header{padding:calc(12px + env(safe-area-inset-top)) 18px 8px}
+  .brand{font-size:1.1rem}
+  .kolo-label{font-size:.6rem;letter-spacing:.18em;text-align:right}
+  .progress{padding:8px 18px 0}
+  footer{padding:10px 14px calc(10px + env(safe-area-inset-bottom));gap:10px}
+  .btns{width:100%;justify-content:space-between}
+  .btns button{flex:1;font-size:1rem;padding:12px 8px}
+  .state{width:100%;text-align:center;order:-1}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header>
+    <div class="brand">Trika · <em>Kašmírský šivaismus</em></div>
+    <div class="kolo-label" id="koloLabel"></div>
+  </header>
+  <div class="progress" id="progress"></div>
+  <main>
+    <div class="stage" id="stage"></div>
+    <div class="content" id="content"></div>
+  </main>
+  <footer>
+    <div class="keys">
+      <span><kbd>mezerník</kbd>běh / zastavit</span>
+      <span><kbd>→</kbd>vpřed</span><span><kbd>←</kbd>zpět</span>
+      <span><kbd>X</kbd>výklad</span><span><kbd>Esc</kbd>zavřít</span>
+    </div>
+    <div class="gestures"><b>švih ←/→</b> listování &nbsp;·&nbsp; <b>ťuknutí na obraz</b> běh / pauza &nbsp;·&nbsp; <b>Výklad</b> tlačítkem</div>
+    <div class="state pause" id="stateLabel">⏸ zastaveno — ovládáte ručně</div>
+    <div class="btns">
+      <button id="bPrev" aria-label="Zpět">←</button>
+      <button id="bPlay" aria-label="Běh / pauza">▶⏸</button>
+      <button id="bNext" aria-label="Vpřed">→</button>
+      <button id="bX" aria-label="Výklad">Výklad</button>
+    </div>
+  </footer>
+</div>
+<div class="overlay" id="overlay" role="dialog" aria-modal="true">
+  <div class="overlay-card" id="overlayCard"></div>
+</div>
+
+<script>
+const GROUP={
+ UVOD:{name:'úvod', hex:'#8f8ba3'},
+ FIL:{name:'filozofie · pohled', hex:'#e9e7f2'},
+ PRAX:{name:'praxe · upāya', hex:'#e0452c'},
+ BEN:{name:'benefity', hex:'#d9a441'},
+ SROV:{name:'srovnání map', hex:'#8fb4d9'},
+ KON:{name:'kontext a dějiny', hex:'#8f8ba3'}
+};
+
+const slides=[
+
+{scene:'tridentDim', grp:'UVOD', eyebrow:'Úvod', title:'Kašmírský šivaismus', subtitle:'nedualní tantra vědomí — manuál pro západního člověka',
+ meta:null,
+ blocks:[
+  ['CO TO JE','f','Filozoficko-praktická tradice z Kašmíru 9.–11. století (souhrnně „Trika"), jejíž jediné tvrzení zní: existuje jen vědomí — svobodné, dynamické, a vy jím jste. Vše ostatní jsou metody, jak to nepřestat přehlížet.'],
+  ['PRO KOHO JE TENTO MANUÁL','g','Pro člověka bez potřeby věřit. Kašmírský šivaismus nevyžaduje víru v bohy, karmu ani reinkarnaci — vyžaduje ochotu experimentovat s vlastní pozorností a poctivě pozorovat výsledky. Sanskrtské pojmy zde čtěte jako technické názvy duševních stavů.'],
+  ['OVLÁDÁNÍ','p','Šipky ←/→ listují, mezerník spouští a zastavuje běh, X otevírá podrobný výklad. Na telefonu švih, ťuknutí na obraz, tlačítko Výklad.']],
+ detail:{title:'Proč zrovna tato tradice',
+  paras:['Mezi kontemplativními systémy má Kašmírský šivaismus vzácnou kombinaci vlastností: je <strong>nedualní</strong> (žádný bůh venku, žádné dvě reality), <strong>světakladný</strong> (tělo, smysly a emoce nejsou překážka, ale brána — žádný asketismus), <strong>psychologicky přesný</strong> (jeho popisy poznávacího aktu snesou srovnání s fenomenologií) a <strong>určený hospodářům</strong> — vznikl mezi lidmi s rodinami a povoláními, ne v klášteře.',
+   'Jeho největší mistři byli zároveň špičkoví intelektuálové své doby: Abhinavagupta (cca 975–1025), autor Tantrálóky, byl současně největším estetikem sanskrtské tradice — jeho teorie vkusu se dodnes učí na katedrách literatury. Utpaladeva vedl s buddhistickými logiky spor na úrovni, kterou dnešní filozofie mysli teprve dohání.',
+   'A přesto zůstal Západu prakticky neznámý až do konce 20. století — zatímco védánta, jóga i buddhismus už dávno zdomácněly. Proč, to je příběh sám o sobě a věnujeme mu předposlední kartu.']}},
+
+{scene:'trika', grp:'FIL', eyebrow:'Filozofie 1', title:'Jedno vědomí, dva aspekty', subtitle:'prakāśa a vimarśa — světlo a jeho sebe-dotek',
+ meta:null,
+ blocks:[
+  ['TEZE','t','Skutečnost je jediné vědomí (cit). Má dva neoddělitelné aspekty: prakāśa — čiré světlo, jímž se cokoli vůbec ukazuje — a vimarśa — schopnost tohoto světla vědět o sobě, dotýkat se sebe, říkat si „jsem". Šiva a Šakti jsou personifikace těchto dvou aspektů, nic víc.'],
+  ['DŮKAZ, NE VÍRA','f','Utpaladevův argument: vědomí nelze popřít, protože každé popření se děje ve vědomí. Není to axiom k uvěření — je to jediná jistota, kterou máte dřív, než čemukoli uvěříte. Zbytek systému je rozvinutí této jistoty.'],
+  ['CO Z TOHO PLYNE','g','Svět není iluze k odvržení (proti tomu KŠ ostře vystupuje), ale projev téhož vědomí — jeho svobodná hra (svātantrya). Praxe pak není útěk ze světa, ale změna toho, jak svět svítí.']],
+ detail:{title:'Prakāśa-vimarśa pro nedualisty',
+  paras:['Znáte-li advaitu: prakāśa odpovídá čirému vědomí-svědku. KŠ ale dodává druhý krok, který advaita spíš mlčky předpokládá: vědomí <strong>není inertní zrcadlo</strong> — je živé, ví o sobě, a tato sebe-reflexivita (vimarśa) je zdrojem veškeré dynamiky, řeči i světa. Proto se v KŠ absolutno nepopisuje jen jako bytí-vědomí-blaženost, ale jako svoboda (svātantrya): moc vědomí brát na sebe jakoukoli podobu, včetně podoby zapomnění na sebe.',
+   'Tím se řeší otázka, na níž iluzionistické systémy krvácejí: proč je tu vůbec svět? Odpověď KŠ: <strong>z plnosti, ne z chyby</strong>. Vědomí se projevuje, protože přetéká — jako umělec tvoří ne z nedostatku, ale z přebytku. Māyā tu není kosmický omyl, ale umělecká technika sebe-omezení, díky níž může Jedno hrát mnohost.',
+   'Nisargadattovo „já jsem" je v této mapě přesně vimarśa v její nejčistší podobě — první sebe-dotek světla, ještě před obsahem. A jeho pokyn jít „před já jsem" míří k prakāśe, která ani sebe-dotek nepotřebuje. Obě tradice popisují týž terén; KŠ jen dodává podrobnou kartografii cesty mezi absolutnem a všedním okamžikem.']}},
+
+{scene:'wave', grp:'FIL', eyebrow:'Filozofie 2', title:'Spanda — puls', subtitle:'vědomí není stav, ale chvění',
+ meta:null,
+ blocks:[
+  ['TEZE','t','Vědomí není statické pozadí, ale jemné pulzování: každý vjem, myšlenka i emoce je vlna, která z něj vyvstává, chvíli svítí a vrací se. Spandakārikā (9. stol.): tento puls je „vlastní chvění" absolutna — a je zachytitelný pozorností.'],
+  ['PROČ JE TO PRAKTICKY ZÁSADNÍ','f','Statické absolutno by bylo k nalezení jen v hlubokém klidu. Pulzující absolutno je k nalezení v čemkoli — v úleku, smíchu, nádechu, tónu. Proto KŠ nemusí utíkat z života: každá vlna nese podpis moře.'],
+  ['ZÁPADNÍ PŘEKLAD','g','Fenomenologicky: zkušenost nepřichází v souvislém filmu, ale v mikroudálostech vznikání a zanikání. Kdo zjemní pozornost natolik, aby to viděl, získá bod dotyku se zdrojem v každém okamžiku dne.']],
+ detail:{title:'Spanda a moderní mysl',
+  paras:['Spanda je nejodvážnější pojem systému: absolutno definované <strong>pohybem</strong>, nikoli klidem. Vibrace tu není metafora navíc — je to popis: pozornost trénovaná na mikrostrukturu okamžiku skutečně nachází zkušenost jako pulzující, ne plynulou. (Kognitivní věda mluví o diskrétních percepčních rámcích a oscilacích pozornosti; je to zajímavá ozvěna, ne důkaz — mapy si podávají ruce přes propast metod.)',
+   'Prakticky spanda znamená: <strong>intenzita není nepřítel</strong>. Slavný verš I.22 jmenuje krajní hněv, prudkou radost, paniku a útěk o život jako stavy, kde je puls „pevně usazen" — protože silná vlna na okamžik smete pojmové obaly a chvění je nahé. Na tom stojí kaula práce s emocemi (máte na ni samostatnou aplikaci — zde na ni jen navážeme).',
+   'A kvantová poznámka s řádnou opatrností: rezonance mezi „světem jako děním, ne věcmi" a procesuálními čteními fyziky (pole, události, relační QM) je strukturální podobnost map, ne fyzikální důkaz metafyziky. KŠ žádnou fyziku nepotřebuje — jeho laboratoří je první osoba.']}},
+
+{scene:'cascade', grp:'FIL', eyebrow:'Filozofie 3', title:'36 tattev — mapa sestupu', subtitle:'jak se z vědomí stane svět, tělo a „já"',
+ meta:null,
+ blocks:[
+  ['K ČEMU MAPA JE','t','Tattvy jsou stupně, jimiž se jediné vědomí „zhušťuje" do zkušenosti: od čiré subjektivity přes energii, omezující závoje (kañcuky), osobu, mysl a smysly až po hmotné živly. Není to kosmologie k věření, ale mapa vrstev vaší přítomné zkušenosti.'],
+  ['PĚT ZÁVOJŮ','f','Kañcuky — mechanismy, jimiž se nekonečné hraje na konečné: všemohoucnost → „zmohu jen něco", vševědoucnost → „vím jen něco", plnost → „chci" (nedostatek), věčnost → „čas", všudypřítomnost → „jsem tady, ne tam". Poznáváte je? To je vaše běžné já — a je vyrobené.'],
+  ['SMĚR PRAXE','g','Co sestoupilo, může vystoupat: praxe jde po téže mapě vzhůru — od smyslů přes energii k subjektu a za něj. Proto KŠ smysly nepotlačuje: jsou to schody, ne bahno.']],
+ detail:{title:'Číst tattvy psychologicky',
+  paras:['Zkuste mapu číst ne jako vznik vesmíru, ale jako <strong>anatomii jediného okamžiku</strong>: právě teď je tu čiré vědomí (Śiva/Śakti), jeho zaostření do perspektivy (závoje), pocit „já" (puruṣa), naladění (buddhi/manas/ahaṃkāra), smyslové kanály a nakonec „venku" svět barev a tvarů. Sestup 36 stupňů proběhne v každém vjemu — mapa říká, kde všude se lze zastavit a rozpoznat.',
+   'Závoje (kañcuky) jsou psychologicky nejcennější část. Říkají: pocit nedostatku, omezené moci, nevědění, času a lokality <strong>nejsou fakta o vás — jsou to funkce</strong>, kterými se hraje hra konečnosti. To radikálně mění terapeutický rámec: nejste rozbití a opravovaní; jste nekonečno v převleku, který lze prohlédnout. (Srovnejte s dědictvím „prvotního hříchu" v západní psýše — a pochopíte část osvobodivého účinku této nauky na západní praktikující.)',
+   'A důležitá poznámka o statusu map: Abhinavagupta sám zachází s tattvami pružně — jinde jich počítá víc, jinde méně, podle účelu. To je postoj celé tradice k vlastní terminologii: <strong>nástroje, ne dogmata</strong>. Mapa slouží rozpoznání; rozpoznané mapu odkládá.']}},
+
+{scene:'symbols', grp:'FIL', eyebrow:'Filozofie 4', title:'Agnostický systém v sanskrtském rouše', subtitle:'božstva jako technické názvy stavů mysli',
+ meta:null,
+ blocks:[
+  ['KLÍČOVÁ TEZE','t','KŠ nevyžaduje jedinou víru navíc oproti tomu, co zakoušíte: Šiva = vědomí, Šakti = jeho energie/pozornost, Kálí = dynamika vznikání a zanikání vjemů, Bhairava = vědomí ve stavu úžasu beze slov, bohyně řeči = síla pojmenování, jež svazuje i osvobozuje. Panteon je psychologický slovník.'],
+  ['PROČ SYMBOLY, NE POJMY','f','Symbol pracuje i tam, kam pojem nedosáhne: obraz tančící bohyně nese dynamiku, vztah a energii najednou — definice ne. Tradice to ví a užívá obrazy jako nástroje ladění mysli, ne jako zprávy o nadpřirozených bytostech.'],
+  ['TEST PRO SKEPTIKA','g','Vezměte kteroukoli praxi z tohoto manuálu, škrtněte všechna sanskrtská slova, provádějte ji měsíc a měřte výsledky (klid, reaktivita, spánek, vztahy). Systém to unese — je postaven na opakovatelné zkušenosti, ne na autoritě.']],
+ detail:{title:'Náboženství, nebo věda první osoby?',
+  paras:['Poctivě: historičtí kašmírští šaivové byli věřící lidé své doby — rituály, chrámy, iniciace. Ale <strong>jádro systému je na tom nezávislé</strong>: Pratyabhijñā („Rozpoznání") byla výslovně stavěna jako filozofická cesta pro ty, kdo nemají přístup k rituálu — argument a přímý vhled místo obřadu. Kṣemarāja shrnul celou nauku do dvaceti sūter o povaze vědomí, kde nevystupuje jediný bůh vyžadující uctívání.',
+   'Přesnější než „náboženství" je proto označení <strong>kontemplativní věda první osoby</strong>: má teorii (vědomí a jeho modulace), experimentální protokoly (dhāraṇy — cvičení pozornosti), predikce (co se stane se zkušeností při tom kterém úkonu) a kritéria replikace (tisíc let praktikujících). Metafyzika je interpretační rámec výsledků — jako v každé vědě — a lze ji držet lehce.',
+   'Pro západního člověka je to úleva dvojí: nemusí nic předstírat (žádné vyznání), a zároveň nemusí nic ochuzovat — symboly smí užívat naplno jako <strong>psychologické technologie</strong>. Jung by řekl: archetypy vědomě zapřažené do individuace. KŠ by dodal: a na konci se i archetypy rozpustí v tom, kdo se dívá.']}},
+
+{scene:'ladder', grp:'PRAX', eyebrow:'Praxe · mapa metod', title:'Čtyři upāye', subtitle:'cesty seřazené podle jemnosti — každý začíná jinde',
+ meta:null,
+ blocks:[
+  ['ŽEBŘÍK','f','Āṇavopāya — cesta jednotlivce: tělo, dech, smysly, mantra (nejhrubší, nejdostupnější). Śāktopāya — cesta energie: práce s myslí, vhledem, emocí. Śāmbhavopāya — cesta Šivy: bezmyšlenkovité spočinutí v čirém vědomí. Anupāya — „bez-cesta": rozpoznání bez metody, bleskem.'],
+  ['JAK SI VYBRAT','t','Pravidlo tradice: začněte tam, kde to jde, a nechte se vytáhnout výš. Když mysl neudrží bezobsažnost (śāmbhava), pracujte s myšlenkou a energií (śākta); když ani to, kotvěte v dechu a těle (āṇava). Žádná úroveň není ostuda — všechny ústí do téhož.'],
+  ['V TOMTO MANUÁLU','g','Následujících šest karet dává po jedné praxi z každého patra: dech a střed, spára mezi myšlenkami, otevřený zrak, vychutnávání smyslů, emoce jako energie, mantra „já". Dohromady tvoří kompletní denní sadu na 20–30 minut.']],
+ detail:{title:'Upāye jako psychologie učení',
+  paras:['Geniální na tomto uspořádání je <strong>diagnostika</strong>: neexistuje jedna správná meditace pro všechny stavy. Rozjitřená mysl potřebuje hrubší kotvu (dech, tělo); sebraná mysl unese jemnější (pozorování myšlenky); tichá mysl smí pustit i pozorování. Tentýž člověk projde během jednoho sezení klidně všemi patry — a manuál mu říká, kdy má které použít.',
+   'Srovnejte s tím, jak se meditace často učí na Západě: jedna technika pro všechny, a kdo na ni „nemá hlavu", odchází s pocitem selhání. Upāyový model říká: <strong>nefunguje-li technika, je špatně párování, ne vy</strong> — sestupte o patro. To samo je terapeutický zásah.',
+   'Anupāya, „bez-prostředek", drží v systému čestné místo pravdy: rozpoznání nakonec není výsledkem technik — techniky jen čistí okno; světlo bylo vždy uvnitř. Ramanovo mlčení, Nisargadattovo „nic nedělej, jen buď" a anupāya jsou totéž ukázání. Ale tradice je střízlivá: pro většinu myslí je „jen buď" zpočátku nesrozumitelný pokyn — proto žebřík.']}},
+
+{scene:'madhya', grp:'PRAX', eyebrow:'Praxe 1 · āṇava', title:'Dech a střed (madhya)', subtitle:'nejstarší dhāraṇa Vidžňánabhairavy',
+ meta:{op:'2× denně', dl:'5–10 min', ben:'klid, HRV, vstupní brána všech dalších praxí'},
+ blocks:[
+  ['PROVEDENÍ','f','Vzpřímeně, přirozený dech. Sledujte celý oblouk: nádech vzniká… vrcholí… a v horní úvrati je kratičká pauza — do ní vstupte pozorností. Výdech klesá… doznívá… dolní úvrať — opět spočiňte. Nezadržujte dech; jen obývejte obraty, kde se sám na okamžik zastaví.'],
+  ['SMYSL','t','V úvratích se na zlomek vteřiny zastaví i mentální provoz — okno do „středu" (madhya), bezobsažného vědomí mezi dvěma pohyby. Vidžňánabhairava: tam „září Bhairavī" — energie čirého vědomí.'],
+  ['BENEFIT','g','Fyziologicky: prodloužený, uvědomovaný dech s klidnými úvratěmi zvedá vagový tonus a variabilitu srdečního rytmu — tělesný podklad klidu. Psychologicky: naučíte se, že mezi podnětem a reakcí existuje mezera — a kde je mezera, je svoboda.']],
+ detail:{title:'Proč právě úvratě',
+  paras:['Dech je jediný autonomní proces, který je zároveň plně přístupný vůli a pozornosti — proto je královskou bránou āṇavopāyi. Úvratě jsou v něm <strong>přirozené trhliny kontinuity</strong>: dech se v nich sám zastavuje, a s ním se na okamžik zadrhne i vnitřní monolog (mysl „jede na dechu" — tattvická teze, kterou si ověříte prakticky: zkuste souvisle myslet v horní úvrati).',
+   'Technické jemnosti: (1) Pauzy <strong>neprodlužujte silou</strong> — násilná zádrž budí poplach, přirozená úvrať budí ticho. (2) Pozornost do úvratě „vkládejte" měkce, jako prst do vody. (3) Když mysl uteče, návrat je praxe, ne selhání — každý návrat je jedno posilovací opakování.',
+   'Progresе po týdnech: úvratě se subjektivně „rozšíří" (ne časem, ale prostorností), ticho z nich začne přetékat do celého dechu, a nakonec zjistíte, že týž střed je k nalezení <strong>mezi jakýmikoli dvěma pohyby</strong> — kroky, slovy, myšlenkami. V tu chvíli jste povýšili z dechu na spandu a jste připraveni na praxi 2.']}},
+
+{scene:'gap', grp:'PRAX', eyebrow:'Praxe 2 · śākta', title:'Spára mezi myšlenkami', subtitle:'nejpřímější metoda systému',
+ meta:{op:'průběžně + 1 sezení', dl:'10–15 min', ben:'odidentifikování od mysli; vhled do zdroje'},
+ blocks:[
+  ['PROVEDENÍ','f','Nechte myšlenky přicházet. Nebojujte s obsahem — čekejte na konce. Myšlenka dozní… a než se zrodí další, je bezobsažná mezera. Padněte do ní pozorností a zůstaňte, dokud ji další myšlenka nezavře. Pak znovu. Zajímá vás výhradně to mezi.'],
+  ['SMYSL','t','V mezeře nejste v bezvědomí — něco bdí, jasně a beze slov. To je vědomí bez obsahu: přímá ochutnávka toho, co jste, když zrovna nejste nikým. Vidžňánabhairava (dhāraṇa 61): mezi dvěma vjemy se rozzáří skutečnost uprostřed.'],
+  ['BENEFIT','g','Nejrychlejší lék na ruminaci, jaký kontemplativní tradice nabízejí: mysl přestává být pánem, jakmile vidíte, že mezi jejími výstupy existujete i bez ní. Roste vnitřní ticho a s ním nezávislost nálady na myšlenkovém počasí.']],
+ detail:{title:'Mikroskopie spáry',
+  paras:['Začátečnická námitka zní: „žádné mezery tam nejsou, myšlenky jedou v kuse." Nejedou — jen je pozornost hrubá. Trénink z praxe 1 (úvratě dechu) je přesně kalibrace rozlišení; kdo vidí úvrať, uvidí do týdnů i spáru. Pomocný trik: <strong>chytejte konce</strong>, ne začátky — konec myšlenky je pomalejší a viditelnější než zrod další.',
+   'Druhá past: udělat z mezery objekt („aha, mezera, super, mám ji") — čímž jste ji právě zavřeli novou myšlenkou. Správné gesto je opačné: <strong>nepozorovat mezeru, ale být jí</strong>. V praxi to znamená vzdát se i pozorovatelské pozice na tu vteřinu, kdy je spára otevřená. Zprvu to zní paradoxně; po pár týdnech je to nejpřirozenější pohyb na světě.',
+   'Toto je śāktopāya v čisté podobě — a zároveň místo, kde se KŠ potkává s Ramanou: jeho átma-vičára („komu vyvstala myšlenka?") je táž operace vedená otázkou místo čekáním. Vyzkoušejte obě formy a nechte si tu, která vaší mysli sedí; cíl je identický — pozornost, která se otočila od obsahů ke svému zdroji.']}},
+
+{scene:'sky', grp:'PRAX', eyebrow:'Praxe 3 · śāmbhava', title:'Bhairavī mudrā — otevřený zrak', subtitle:'oči dokořán do světa, pozornost spočívá uvnitř',
+ meta:{op:'kdykoli venku', dl:'3–5 min (i 30 s)', ben:'nedualita v akci; okamžité rozšíření a klid'},
+ blocks:[
+  ['PROVEDENÍ','f','Ideálně před otevřeným prostorem či nebem. Oči doširoka otevřené, pohled měkký, nikam nezaostřený — periferie stejně živá jako střed. A teď obrat: aniž cokoli zavřete, nechte pozornost spočívat ve vnímajícím, ne ve vnímaném. Vidíte vše — nedíváte se na nic.'],
+  ['SMYSL','t','Toto je śāmbhavopāya: žádný objekt, žádná technika, jen vědomí zůstávající u sebe uprostřed plného provozu smyslů. Tradice tomu říká „pečeť Bhairavy" — stav, kdy vnitřek a vnějšek přestávají být dvě místnosti.'],
+  ['BENEFIT','g','Periferní, rozostřené vidění samo o sobě tlumí stresovou osu (opak tunelového vidění poplachu) — mudrā to spojuje s vhledem. Skvělá „mikropraxe" do fronty, na zastávku, k oknu: třicet vteřin a den změní barvu.']],
+ detail:{title:'Proč to funguje',
+  paras:['Zrak je náš dominantní smysl a jeho režim táhne režim celé mysli: zaostřený pohled = uchopující, cílová mysl; <strong>rozostřený panoramatický pohled = přijímající, prostorná mysl</strong>. Bhairavī mudrā tuto páku využívá vědomě — a přidává rozhodující prvek, který v pouhé relaxaci chybí: pozornost otočenou ke svému zdroji.',
+   'Fenomenologicky se stane zvláštní věc: když oči zůstanou otevřené a pozornost „couvne" do vnímajícího, hranice mezi vámi a scénou zeslábne. Není to mystická mlha — je to prosté zjištění, že <strong>hranici vyráběl způsob dívání</strong>, ne svět. Kṣemarāja: jógin vidí vesmír jako své vlastní tělo.',
+   'Tato praxe je také nejlepší odpovědí na námitku „nemám čas meditovat": nevyžaduje polštář, zavřené oči ani přestávku v činnosti. Autobus, kancelářské okno, les. A je to praxe hospodáře par excellence — svět se nevypíná, svět se stává praxí.']}},
+
+{scene:'senses', grp:'PRAX', eyebrow:'Praxe 4 · śākta', title:'Rasa — vychutnání jako vhled', subtitle:'estetická cesta: chuť, hudba, krása',
+ meta:{op:'1× denně vědomě', dl:'2–5 min', ben:'radost bez závislosti; smysly jako brána, ne past'},
+ blocks:[
+  ['PROVEDENÍ','f','Vezměte jeden plný smyslový zážitek — doušek, sousto, skladbu, západ slunce. Vstupte do něj celou pozorností, bez komentáře, a v vrcholu chuti položte bezeslovný obrat: co tu vlastně chutná? Nechte slast prosvítit k tomu, kdo ji zná — a spočiňte v čiré chuti bez ochutnávače.'],
+  ['SMYSL','t','KŠ jediný z velkých systémů udělal z estetického zážitku plnohodnotnou jógu: úžas nad krásou (camatkāra) je podle Abhinavagupty záblesk téže sebe-chuti vědomí, kterou hledá meditace. Umění je laboratoř osvobození.'],
+  ['BENEFIT','g','Psychologicky jde o trénink savoring — vychutnávání, jeden z nejlépe doložených zdrojů životní spokojenosti. KŠ k němu přidává směr dovnitř, takže slast neroste v závislost, ale ve svobodu: čím plněji vychutnáno, tím méně to potřebujete.']]},
+{scene:'wave', grp:'PRAX', eyebrow:'Praxe 5 · śākta/kaula', title:'Emoce jako energie', subtitle:'vlna beze jména se vrací do moře',
+ meta:{op:'při každé vlně', dl:'10–60 s', ben:'konec reaktivity bez potlačení'},
+ blocks:[
+  ['PROVEDENÍ VE ZKRATCE','f','Vlna přichází (žár, tlak, chvění) → useknout příběh vprostřed věty → vplout do čiré tělesné energie a nedělat nic → v největší intenzitě rozpoznat: tato síla a bdělost, jež o ní ví, nejsou dvě → nechat doznít beze stopy. Jednat lze potom, z jasnosti.'],
+  ['SMYSL','t','Spandakārikā I.22: v krajním hněvu, prudké radosti či panice je puls absolutna nahý. Emoce je koncentrovaná Šakti — co je pro asketické cesty překážka, je zde palivo.'],
+  ['KOMPLETNÍ MANUÁL','g','Této metodě je věnována samostatná aplikace Kaula (dvanáct Kálí a práce s intenzitou) — zde je karta jen spojnicí v celku systému. Pojistky odtud platí i tam: žádná obhajoba afektu, trauma jen s oporou, etika jednání trvá.']],
+ detail:{title:'Místo emocí v celku Triky',
+  paras:['V mapě upājí patří práce s emocí do śāktopāyi — cesty energie — a historicky vyrůstá z kaulských linií, které Abhinavagupta integroval jako esoterické jádro Triky. Logika je čistě spandická: <strong>emoce je vlna vědomí o vysoké amplitudě</strong>; vysoká amplituda je snadněji rozpoznatelná než jemné chvění klidu — pokud jí pozornost dokáže čelit bez příběhu.',
+   'V celku denní praxe emoce fungují jako <strong>terénní zkouška</strong>: polštářové praxe (dech, spára, mudrā) budují kapacitu, vlny dne ji testují a prohlubují. Kdo medituje, ale vlny ho vláčí, má praxi skleníkovou; kdo zvládá vlny, ale nesedá, plytkou. Systém počítá s obojím.',
+   'A poslední souvislost, která spojí vaše mapy: poslední vlnou, na kterou se tato metoda jednou aplikuje, je sám pocit „já jsem" — nejtišší a nejtrvalejší emoce ze všech. Nechat ji vyhořet v bdělosti je místo, kde kaula, Krama, Pratyabhijñā i átma-vičára říkají beze slov totéž.']}},
+
+{scene:'mantra', grp:'PRAX', eyebrow:'Praxe 6 · āṇava→śākta', title:'Mantra „já" — ahám a haṃsa', subtitle:'zvuk, který ukazuje na mluvčího',
+ meta:{op:'1 mála (108×) či 10 min', dl:'10 min', ben:'koncentrace + trvalá stopa sebe-rozpoznání'},
+ blocks:[
+  ['PROVEDENÍ','f','Varianta dechová: s nádechem vnitřně „haṃ", s výdechem „sa" — haṃsa, přirozená mantra dechu; po minutách nechte slabiky zjemnit, až zbude jen vědomý dech a nakonec jen vědomí. Varianta jádrová: v tichu držte bezhlasé „ahám" (já) — ne jako slovo o sobě, ale jako ukazatel k tomu, kdo je před slovem.'],
+  ['SMYSL','t','V KŠ je mantra vrcholně reflexivní: ahám je jméno vimarśi, sebe-doteku vědomí. Neopakujete formuli k božstvu — opakujete šipku k sobě, dokud šipka nezmizí v cíli.'],
+  ['BENEFIT','g','Rytmus + význam = dvojí kotva: mantra drží těkavou mysl a současně ji stáčí správným směrem. Skvělé pro dny, kdy je bezobsažná praxe nad síly — mantra je zábradlí vedoucí k témuž schodišti.']],
+ detail:{title:'Fonematická mystika střízlivě',
+  paras:['KŠ vypracoval nejjemnější teorii řeči v indické tradici: čtyři úrovně slova od nejjemnějšího záměru po vyslovený zvuk (parā → paśyantī → madhyamā → vaikharī). Prakticky z ní plyne postup mantry <strong>dovnitř</strong>: nahlas → šeptem → v mysli → jako pouhý puls významu → ticho, jež význam nese. Mantra se neopakuje donekonečna — mantra se rozpouští směrem ke zdroji řeči.',
+   'Haṃsa („labuť"; též haṃ-saḥ = „já jsem To") má půvab v tom, že ji <strong>už dýcháte</strong>: tradice říká, že dech sám ji recituje 21 600× denně — praxe jen přidává pozornost k tomu, co běží. Proto je ideální mantrou pro skeptiky: žádná magická slabika, jen označení přirozeného rytmu, které vede pozornost do úvratí (a jsme zpět u praxe 1 — kruh se uzavírá).',
+   'U „ahám" hlídejte jediný záhyb: nesmí zesílit osobní ego („já, Karel"). Pojistka je vestavěná v postupu — ahám se drží <strong>beze slov a bez přívlastků</strong>, jako holý fakt přítomného vědomí. Zesílí-li osoba, vraťte se k haṃse a dechu. Správně vedené „já" je nejkratší mantra neduality: jediná slabika, a ukazuje přesně tam, kam Ramanovo „kdo jsem já?".']}},
+
+{scene:'benefits', grp:'BEN', eyebrow:'Benefity 1', title:'Duševní', subtitle:'co praxe dělá s psychikou západního člověka',
+ meta:{op:'—', dl:'týdny až měsíce', ben:'viz karta'},
+ blocks:[
+  ['RÁMEC PLNOSTI','f','Nejhlubší zásah není technika, ale předpoklad: nejste vadní. Pūrṇatā — plnost — říká, že jádro je celé a zdravé, jen zahalené. Pro psýchu vychovanou na nedostatečnosti a výkonu je to tektonický posun: praxe není oprava, ale odhalování.'],
+  ['KONKRÉTNĚ','t','Spárové praxe ředí ruminaci; práce s emocí bere sílu reaktivitě bez potlačení (a tedy bez pozdějších výbuchů); rasa-praxe zvedá schopnost radosti; závoje (kañcuky) dávají jazyk, jak držet vlastní omezení lehce — jako roli, ne rozsudek.'],
+  ['VZTAHY','g','Kdo vidí jedno vědomí ve všech, hůř udržuje pohrdání a nepřátelství. Není to morální příkaz, ale vedlejší účinek vidění — a bývá první změnou, které si všimne okolí.']],
+ detail:{title:'Psychologie rozpoznání',
+  paras:['Pratyabhijñā znamená „rozpoznání" — a jeho psychologická struktura je pozoruhodně moderní: netvrdí, že máte něco získat (výkonový rámec), ale že máte <strong>znovu-poznat, co nikdy nechybělo</strong> — jako princezna z podobenství, která žebrá, zapomenuvši, kým je. Terapeuticky to obchází past duchovního perfekcionismu: není kam dojít, je nač se rozpomenout.',
+   'Druhý mechanismus: <strong>disidentifikace bez disociace</strong>. Západní úzkostná mysl se buď s obsahy ztotožňuje (zaplavení), nebo se od nich odřezává (otupění). Spanda nabízí třetí polohu — být mořem, které vlny cítí plně, ale nejsou jeho hranicí. Emoce zůstávají živé (KŠ je světakladný!), jen přestávají vládnout.',
+   'A třetí: <strong>rehabilitace touhy a slasti</strong>. Tradice vyrostlé z askeze vštěpují jemný svár s vlastní vitalitou; KŠ učí slast prohlubovat pozorností, až se sama otevře do svobody. Pro západního člověka, kulturně rozpolceného mezi puritánstvím a konzumem, je to třetí cesta, kterou jinde těžko najde: požitek jako škola nezávislosti.']}},
+
+{scene:'body', grp:'BEN', eyebrow:'Benefity 2', title:'Fyziologické', subtitle:'střízlivě: co se děje v těle',
+ meta:{op:'—', dl:'měřitelné za týdny', ben:'viz karta'},
+ blocks:[
+  ['DECH A SRDCE','f','Pomalý uvědomovaný dech s klidnými úvratěmi (praxe 1) zvedá aktivitu bloudivého nervu a variabilitu srdečního rytmu — fyziologický podpis zotavení a odolnosti; klesá klidová tepová frekvence a krevní tlak u stresovaných.'],
+  ['MOZEK A POZORNOST','t','Trénink pozornosti tohoto typu je spojován s lepší interocepcí (vnímání těla zevnitř), stabilnější pozorností a slabší aktivitou sítě klidového režimu, jež nese ruminaci. Rozostřený panoramatický zrak (praxe 3) tlumí poplachový režim přímo skrze okulomotoriku.'],
+  ['STŘÍZLIVOST','g','Poctivá poznámka: studie se týkají meditace a dechu obecně — specificky KŠ zkoumán prakticky nebyl. Tvrdíme jen průnik: jeho praxe patří do rodin technik, jejichž účinky doloženy jsou. Nic víc systém tvrdit nepotřebuje — jeho cíl je jinde a benefity bere jako vedlejší produkt.']],
+ detail:{title:'Tělo v světakladné tantře',
+  paras:['KŠ má k tělu vztah, který západní dualismus překvapuje: tělo není pytel, v němž vězí duše, ale <strong>zhuštěné vědomí</strong> — nejnižší patra tattvické mapy, stále táž látka jako vrchol. Proto praxe tělo nepřemáhá, ale ladí: dech, smysly a energie jsou struny, ne mříže.',
+   'Mechanisticky lze čtyři pilíře manuálu číst takto: <strong>úvratě dechu</strong> = baroreflexní a vagová stimulace v pomalém rytmu; <strong>spára myšlenek</strong> = přerušování ruminační smyčky (DMN); <strong>panoramatický zrak</strong> = přepnutí okulomotoricko-poplašného páru do bezpečného módu; <strong>vychutnávání</strong> = trénink pozitivního afektu a interocepce. Že tytéž úkony tradice popsala jazykem bohyň a kanálů, na fyziologii nic nemění — a na cíli tradice nic nemění fyziologie.',
+   'Jedno varování patří i sem: silová práce s dechem a „energií" (zádrže, hyperventilační techniky, násilné buzení kundaliní) do svépomocné praxe nepatří — umí rozhodit spánek i nervový systém. Vše v tomto manuálu je záměrně v jemném, bezpečném pásmu: pozornost, přirozený dech, otevřené oči.']}},
+
+{scene:'tridentFull', grp:'BEN', eyebrow:'Benefity 3', title:'Duchovní', subtitle:'co znamená „osvobození", když se nikam neodchází',
+ meta:{op:'—', dl:'roky · celý život', ben:'viz karta'},
+ blocks:[
+  ['CÍL SYSTÉMU','f','Džívanmukti — osvobození zaživa: trvalé rozpoznání, že to, co se dívá vašima očima, je totéž svobodné vědomí, jež hraje celý svět. Ne stav navíc, ale konec přehlížení. Svět potom nemizí — mění vlastníka: z „děje se mi" na „hraji se".'],
+  ['PO CESTĚ','t','Dlouho před cílem: ubývá strachu z konců a smrti (rozpouštění je denní chléb praxe), roste bezdůvodná radost (sebe-chuť vědomí, camatkāra) a důvěra, která nestojí na okolnostech — protože stojí na tom, co okolnosti předchází.'],
+  ['MĚŘÍTKO PRAVOSTI','g','Tradice i zdravý rozum se shodují: pravý pokrok voní svobodou a láskou zároveň. Jen odstup = disociace v kostýmu; jen citovost = sentiment. Poznají to dřív vaši blízcí než vy — ptejte se jich.']],
+ detail:{title:'Osvobození pro hospodáře',
+  paras:['Nejradikálnější duchovní tvrzení KŠ je nenápadné: <strong>mezi osvobozením a plným životem není spor</strong>. Abhinavagupta — pravzor — byl učenec, umělec, učitel obklopený žáky; jeho ideál nebyl jeskynní poustevník, ale člověk, jehož všední den je nepřetržitá púdža, protože prohlédl, kdo den žije.',
+   'Tomu odpovídá i pojetí milosti (śaktipāta, „sestoupení energie"): rozpoznání nakonec nepřichází jako výsledek výkonu, ale jako <strong>gesto svobody vědomí vůči sobě</strong> — praxe jen kypří půdu. Pro západního člověka štvaného duchovní meritokracií je to hluboká úleva: děláte, co je na vás, a zbytek není váš úkol. (Křesťanská uši tu slyší ozvěnu milosti; rozdíl je, že neteče odjinud — teče z vašeho vlastního dna.)',
+   'A poslední plod, o němž se málo mluví: <strong>smíření s konečností</strong>. Kdo léta denně nechává rozpouštět vjemy, myšlenky i pocit já, tomu smrt přestává být neznámou — je to pohyb, který zná z tisíců malých provedení. Tradice slibuje víc (rozpoznání v okamžiku smrti); ale i skeptik si odnáší méně strachu, a to je benefit, který unese jakoukoli metafyziku.']}},
+
+{scene:'venn', grp:'SROV', eyebrow:'Srovnání 1', title:'S buddhismem', subtitle:'prázdnota a plnost — dvě mapy, jeden terén?',
+ meta:null,
+ blocks:[
+  ['SPOLEČNÉ','t','Obě tradice jsou nedualní, praktické, mapují mysl do detailu a jejich tantrická křídla sdílejí metody i symboly (společné kořeny v týchž jogínských prostředích). Mahāmudrā/dzogčhenový pokyn „nech myšlenku osvobodit se v okamžiku vyvstání" je k nerozeznání od spandické praxe.'],
+  ['ROZDÍL','f','Buddhismus: na dně jevů není žádná esence — prázdnota (śūnyatā); i vědomí je proud bez vlastníka. KŠ: na dně je vědomí samo — ne jako věc, ale jako nepopiratelná svítivost; prázdné je vše kromě toho, co prázdnotu zná. Utpaladevova odpověď Buddhistům: popřít vědomí lze jen vědomě.'],
+  ['PRAKTICKY','g','Fenomenologicky se cesty sbíhají: obě končí v bezobsažné, bdělé, blažené jasnosti. Zda ji nazvete prázdnotou jevů, či plností vědomí, je volba mapy — a možná temperamentu. Dobrá zpráva: nemusíte rozhodnout, abyste praktikovali; špatná pro debatéry: spor nejde rozseknout zevnitř pojmů.']],
+ detail:{title:'Tisíciletá debata v kostce',
+  paras:['Historicky šlo o skutečný intelektuální zápas: kašmírští mistři znali buddhistickou logiku (Dharmakīrti) dokonale a Pratyabhijñā je z velké části <strong>odpovědí na ni</strong>. Buddhista: „svědek je jen další konstrukt — hledejte ho a nenajdete." Utpaladeva: „hledání, které nenachází, je samo svítivé; tuto svítivost nelze zkonstruovat, protože každá konstrukce ji předpokládá." Buddhista: „svítivost ano — ale bez vlastníka a trvání." A tak dál, na úrovni, která dodnes živí filozofii mysli.',
+   'Prakticky se rozdíl promítá jemně: buddhistické praxe víc <strong>dekonstruují</strong> (rozebrat vjem, najít bezpodstatnost), šaivské víc <strong>rozpoznávají</strong> (nechat vjem prosvítit ke zdroji a vychutnat jeho energii). Dekonstrukce chrání před inflací, rozpoznání před suchostí a nihilistickým omylem. Zralí praktikující obou táborů si techniky beztak půjčují.',
+   'Váš průchod oběma mapami (dvanáct Kálí ↔ Vadžrajóginí) to ilustruje: kramická Kálí požírající poznávací akt a buddhistická dākinī tančící v prázdnotě jsou historicky sestry a fenomenologicky dvojčata. Kde přesně se mapy rozcházejí, zjistíte až v místě, kam mapy nedosáhnou — a tam už, jak obě shodně tvrdí, spor nikdo nevede.']}},
+
+{scene:'circuits', grp:'SROV', eyebrow:'Srovnání 2', title:'S osmi okruhy Learyho a R. A. Wilsona', subtitle:'psychedelická kybernetika potkává tantru',
+ meta:null,
+ blocks:[
+  ['MODEL','t','Leary/Wilson: vědomí jako 8 „okruhů" — 1 biopřežití, 2 emočně-teritoriální, 3 sémantický, 4 sociosexuální (běžný provoz); 5 neurosomatický (tělesná blaženost), 6 metaprogramovací (mysl přepisuje vlastní software), 7 neurogenetický (kolektivní/archetypální), 8 nelokální (za časoprostorem).'],
+  ['PŘEKLAD DO TRIKY','f','Okruhy 1–4 ≈ vědomí pod závoji (kañcuky) — paśu, „spoutaný". 5 ≈ āṇavopāya a rasa: tělo jako blaženost. 6 ≈ vimarśa a mantra: vědomí vědomě přepisující sebe — doslova „metaprogramování", svātantrya v akci. 7 ≈ archetypální vrstvy, božstva jako programy. 8 ≈ Śiva, turīya, nelokální svědek.'],
+  ['ROZDÍL, KTERÝ ROZHODUJE','g','Wilsonovy „reality tunnels" = māyā s kañcukami, řečeno kalifornsky: každý žije v modelu, ne ve světě. Shoda je hluboká — agnosticismus, experiment, humor. Rozdíl: Leary měl raketu (látky) a málo přistávací dráhy; Trika má tisíc let protokolů, etiky a integrace. Mapa bez disciplíny baví; mapa s disciplínou osvobozuje.']],
+ detail:{title:'Co si obě mapy mohou dát',
+  paras:['Wilsonův největší dar západnímu čtenáři je <strong>model-agnosticismus</strong>: každý popis reality je model; kdo to zapomene, stane se vězněm svého tunelu. To je čistá māyā-nauka bez sanskrtu — a skvělá očkovací látka proti dogmatismu, i duchovnímu. Trika by podepsala a dodala: včetně tohoto modelu, a včetně modelu „vše jsou jen modely".',
+   'Obráceně: osmiokruhový model trpí tím, že vyšší okruhy popisuje jazykem zážitků (co člověk zažije na LSD, v samádhi…), ale chybí mu <strong>soteriologie a řemeslo</strong> — jak stavy stabilizovat, integrovat do charakteru, nezbláznit se z nich a nezpychnout. Přesně to je obsah upájí, pojistek a etiky, kterou jste potkali v celém tomto manuálu. Learyho generace objevila území a často se v něm ztratila; kontemplativní tradice jsou katastry téhož území.',
+   'A jedna přesná paralela na závěr: Wilsonovo cvičení „dva týdny žij, jako by X" (přepínání tunelů vůlí) je strukturálně <strong>božská hrdost generační fáze</strong> — vědomé obývání zvolené identity s plným vědomím její zkonstruovanosti. Tantra to dělá s probuzenou identitou a s rozpuštěním na konci; Wilson s libovolnou a pro vhled do relativity. Kdo zvládl jedno, rozumí druhému — a chápe, proč obojí bez prázdnoty/agnosticismu končí inflací.']}},
+
+{scene:'tridentFull', grp:'SROV', eyebrow:'Srovnání 3 · syntéza', title:'Pragmatismus Triky', subtitle:'systém, který se měří výsledkem',
+ meta:null,
+ blocks:[
+  ['TŘI ZNAKY PRAGMATISMU','f','1) Kritérium je zkušenost: nauka se ověřuje vhledem, ne citací. 2) Metoda se přizpůsobuje člověku (upāye), ne člověk metodě. 3) Svět se nezavrhuje: praxe musí obstát v manželství, práci a tržnici, jinak je skleníková.'],
+  ['ŽÁDNÉ ČEKÁNÍ','t','Trika neslibuje odměnu po smrti ani po dvaceti letech: první plody (mezera, ticho úvratě, prosvětlený vjem) přicházejí v týdnech a jsou testovatelné. Dlouhá cesta existuje, ale platí se průběžně — to je poctivý obchodní model.'],
+  ['AGNOSTIK VÍTÁN','g','Vstupní vybavení: pozornost, poctivost, trpělivost. Víra není na seznamu. Sanskrt je odborná terminologie — jako latina v anatomii: můžete říkat „bezobsažná bdělost" místo „Bhairava" a nic se neztratí kromě vůně.']],
+ detail:{title:'Filozofie jako nástroj, ne pomník',
+  paras:['William James definoval pragmatismus otázkou: jaký rozdíl v praxi činí, že je věta pravdivá? Trika by obstála skvěle: každá její teze má <strong>praktickou hotovost</strong> — „vědomí je jedno" se vyplácí v soucitu a nedualitě vnímání; „svět je svobodná hra" v lehkosti a tvořivosti; „závoje jsou funkce" v laskavosti k vlastním mezím. Teze, která nic nemění na životě, by v tomto systému neměla co dělat.',
+   'Zároveň pozor na plochý závěr „je to vlastně jen psychologie". Trika je psychologie <strong>plus závazek k pravdě</strong>: netvrdí, že nedualita je užitečná fikce pro klid — tvrdí, že je to skutečnost, kterou lze poznat. Agnostik smí závorku držet, jak dlouho chce; praxe funguje i se závorkou. Ale systém sám hraje o víc než wellbeing — hraje o pravdu, a v tom je jeho důstojnost.',
+   'Snad nejlepší formulace jeho pragmatismu je Kṣemarājova osnova Pratyabhijñāhṛdayam: dvacet vět, od „vědomí je svobodnou příčinou všeho" po „pak je běžný stav blažeností". Žádná z nich nevyžaduje chrám. Všechny vyžadují, abyste se podívali.']}},
+
+{scene:'history', grp:'KON', eyebrow:'Kontext', title:'Proč byl Západu tak dlouho neznámý', subtitle:'dějiny jednoho velkého přehlédnutí',
+ meta:null,
+ blocks:[
+  ['ZLOM 14. STOLETÍ','f','Rozkvět trval krátce (cca 850–1050). Pak Kašmír postupně přešel pod islámskou vládu, chrámová a učenecká infrastruktura se rozpadla, linie se ztenčily na rodinné předávání a rukopisy. Tradice přežila — ale šeptem, v jediném údolí.'],
+  ['FILTRY 19.–20. STOLETÍ','t','Koloniální indologie hledala „ušlechtilý" hinduismus a našla védántu; Vivékánanda ji vyvezl jako výkladní skříň Indie. Tantra mezitím dostala nálepku úpadku, magie a sexu — od viktoriánů i hinduistických reformátorů. Nejtěžší texty tradice navíc odolávaly překladu: Abhinavaguptův sanskrt je extrémní i pro sanskrtisty.'],
+  ['ZNOVUOBJEVENÍ','g','1911–40: kašmírská státní edice (KSTS) poprvé tiskne rukopisy. Poté hrstka prostředníků: poslední velký mistr linie Svámí Lakšman Džú (†1991), badatelé Silburnová, Padoux, Sanderson, Dyczkowski, překladatel Jaideva Singh — a teprve od 90. let anglické překlady, po roce 2010 popularizace (Wallis). Západ tedy dostal Triku o celé století později než védántu a zen.']],
+ detail:{title:'Anatomie přehlédnutí',
+  paras:['Sečteno, šlo o souběh pěti filtrů. <strong>Geografie</strong>: jediné himálajské údolí, žádná celoindická síť klášterů jako u védánty či buddhismu. <strong>Dějiny</strong>: politický zlom přišel právě ve chvíli největší zralosti — tradice nestihla expandovat. <strong>Jazyk</strong>: klíčová díla jsou vrcholně technická; bez žijícího komentáře byla i pro indology zapečetěná. <strong>Esoterika</strong>: jádro se předávalo ústně a výběrově — texty samy říkají, že bez učitele mají mlčet. <strong>Ideologie</strong>: dvojí cenzura tantry — viktoriánská i reformně hinduistická — ji vyřadila ze „slušné" prezentace Indie na celé století.',
+   'Je v tom i ironie hodná Wilsonova pera: Západ si z Indie nejdřív odvezl mapu, která světu rozumí jako iluzi k opuštění (výkladová védánta), a o sto let později zjistil, že hned vedle ležela mapa, která světu rozumí jako hře k probuzenému hraní — mnohem bližší západnímu vitalismu, psychologii i vědě. Kdyby pořadí bylo opačné, možná by dnes „východní moudrost" v obecné představě neznamenala odříkání, ale úžas.',
+   'Pro vás z toho plyne praktická výhoda pozdního příchodu: Trika k nám dorazila už s kritickým aparátem (Sanderson a spol. oddělili historii od hagiografie) a bez nánosu guru-průmyslu, který stihl zdeformovat starší importy. Číst ji dnes znamená číst pramen s čistýma rukama — vzácná situace v dějinách přenosu tradic.']}},
+
+{scene:'tridentFull', grp:'KON', eyebrow:'Závěr', title:'Jedna věta', subtitle:'a doporučená cesta dál',
+ meta:null,
+ blocks:[
+  ['','f','Skutečnost je vědomí, vědomí jste vy, a svět je jeho svobodná hra — praxe je umění to nepřehlížet uprostřed hraní.'],
+  ['','g','Denní sada z tohoto manuálu: ráno 10 min dech a střed · přes den bhairavī mudrā a jedno vědomé vychutnání · vlny emocí metodou kauly · večer 10 min spára myšlenek či haṃsa. Za měsíc vyhodnoťte — ne podle zážitků, ale podle reaktivity, radosti a vztahů.']],
+ detail:{title:'Kudy dál',
+  paras:['<strong>Texty pro začátek:</strong> Kṣemarāja — Pratyabhijñāhṛdayam („Jádro rozpoznání"; 20 sūter, ideální první text, česky/anglicky v překladu J. Singha); Vijñānabhairava-tantra (112 dhāraṇ — praktický katalog; Singh, Silburnová, nověji Wallis); Spandakārikā. <strong>Moderní úvody:</strong> Christopher Wallis — Tantra Illuminated a jeho překlad „Recognition Sutras"; Mark Dyczkowski — The Doctrine of Vibration (hlubší); Alexis Sanderson — studie pro historický kontext.',
+   '<strong>Jak číst:</strong> vždy párově — kus textu, kus praxe. Trika je návod k experimentu; čtená bez praktikování se mění v estetiku pojmů, praktikovaná bez čtení ztrácí přesnost. A držte model-agnostickou závorku z Wilsona: mapy vám mají sloužit, ne vy jim.',
+   '<strong>A úplně nakonec</strong> — spojnice všech vašich map: Krama sleduje puls každého vjemu, Vadžrajóginí tvoří a rozpouští formu, Ramana táhne otázkou ke kořeni, Nisargadatta odmítá vše kromě „já jsem" a pak i to, Trika říká: to vše je jediné vědomí hrající si na cesty k sobě. Vyberte jednu bránu a dejte jí rok. Všechny vedou do místnosti, která nemá dveře — protože jste z ní nikdy nevyšli.']}}
+];
+
+/* opravit vnořený slide (senses má detail?) */
+(function fix(){
+  const s=slides.find(x=>x.scene==='senses');
+  if(s && !s.detail){
+    s.detail={title:'Camatkāra — úžas jako metoda',
+     paras:['Abhinavagupta, největší estetik sanskrtského světa, postavil most, který nikdo před ním: zážitek diváka pohlceného dramatem či posluchače hudbou je <strong>ochutnávka osvobození</strong> — na okamžik mizí osobní starost, čas i „já" a zbývá čirá, nezaujatá chuť (rasa). Rozdíl mezi estetickým vytržením a samádhi je podle něj stupeň, ne druh.',
+      'Praktický protokol vychutnání: (1) jeden podnět, plná pozornost, žádný multitasking; (2) zpomalit — chuť se rozvíjí v čase, který jí běžně nedáváme; (3) v vrcholu obrat dovnitř: nechat zážitek ukázat na zakoušejícího; (4) dojezd — nechat doznít beze spěchu k dalšímu. Dvě minuty denně stačí, aby se za měsíc změnil vztah ke slasti: z konzumace na komunikaci.',
+      'Pojistka proti hédonistickému omylu: test závislosti. Pravá rasa-praxe <strong>snižuje</strong> nutkavost (blaženost se osvobozuje od spouštěče — víte, že pramen je uvnitř), kvazi-praxe ji zvyšuje. Pokud „vědomé vychutnávání" vede k většímu bažení, obraťte důraz na krok 3 — obrat k zakoušejícímu je to, co dělá z požitku jógu.']};
+  }
+})();
+
+/* ─────────────── SVG ─────────────── */
+const NS='http://www.w3.org/2000/svg';
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function polar(cx,cy,r,d){const a=(d-90)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)];}
+function addGlow(svg){
+  const defs=el('defs',{},svg);
+  const f=el('filter',{id:'glow',x:'-60%',y:'-60%',width:'220%',height:'220%'},defs);
+  el('feGaussianBlur',{stdDeviation:'5',result:'b'},f);
+  const m=el('feMerge',{},f);
+  el('feMergeNode',{in:'b'},m);el('feMergeNode',{in:'SourceGraphic'},m);
+}
+function progArc(g,r){
+  el('circle',{cx:220,cy:220,r,fill:'none',stroke:'#e0452c','stroke-width':2,
+    'stroke-linecap':'round','stroke-dasharray':`${2*Math.PI*r}`,'stroke-dashoffset':`${2*Math.PI*r}`,
+    transform:'rotate(-90 220 220)',id:'progArc',opacity:.8},g);
+}
+
+function trident(mode){ // dim | full
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Trišúla — trojzubec Triky'});
+  const g=el('g',{class:'pulse'},svg);
+  const hot=mode==='full';
+  const col=hot?'#e9e7f2':'#8f8ba3';
+  // kruh vědomí
+  el('circle',{cx:220,cy:200,r:150,fill:'none',stroke:'#2c2a45','stroke-width':1},g);
+  el('circle',{cx:220,cy:200,r:150,fill:'#e9e7f2',opacity:hot?.03:.015},g);
+  // dřík
+  el('line',{x1:220,y1:150,x2:220,y2:352,stroke:col,'stroke-width':4,'stroke-linecap':'round',
+    filter:hot?'url(#glow)':'none'},g);
+  // střední hrot
+  el('path',{d:'M220,70 L212,140 L228,140 Z',fill:col,filter:hot?'url(#glow)':'none'},g);
+  // boční hroty (oblouky)
+  el('path',{d:'M156,160 C150,120 168,92 190,84 L182,116 C172,128 164,142 164,158 Z',fill:col,opacity:.95,filter:hot?'url(#glow)':'none'},g);
+  el('path',{d:'M284,160 C290,120 272,92 250,84 L258,116 C268,128 276,142 276,158 Z',fill:col,opacity:.95,filter:hot?'url(#glow)':'none'},g);
+  el('path',{d:'M164,158 C176,168 204,172 220,150',fill:'none',stroke:col,'stroke-width':4,'stroke-linecap':'round'},g);
+  el('path',{d:'M276,158 C264,168 236,172 220,150',fill:'none',stroke:col,'stroke-width':4,'stroke-linecap':'round'},g);
+  // popisky tří hrotů
+  const L=[[150,72,'icchā · vůle'],[220,52,'jñāna · poznání'],[290,72,'kriyā · činnost']];
+  L.forEach(([x,y,t])=>el('text',{x,y,'text-anchor':'middle',fill:hot?'#d9a441':'#5c5975',
+    'font-size':10.5,'font-style':'italic','font-family':'Cormorant Garamond, serif'},g).textContent=t);
+  el('text',{x:220,y:396,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,'letter-spacing':'3',
+    'font-family':'Karla, sans-serif'},g).textContent=hot?'ŚIVA · ŚAKTI · NARA — TŘI, JEŽ JSOU JEDNO':'TRIKA — „TROJICE"';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function trikaScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Prakāśa a vimarśa'});
+  const g=el('g',{class:'pulse'},svg);
+  // světlo
+  el('circle',{cx:220,cy:190,r:90,fill:'#e9e7f2',opacity:.06},g);
+  el('circle',{cx:220,cy:190,r:90,fill:'none',stroke:'#e9e7f2','stroke-width':1.6,filter:'url(#glow)'},g);
+  el('text',{x:220,y:150,'text-anchor':'middle',fill:'#e9e7f2','font-size':15,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='prakāśa';
+  el('text',{x:220,y:168,'text-anchor':'middle',fill:'#8f8ba3','font-size':9.5,
+    'font-family':'Karla, sans-serif'},g).textContent='světlo, jímž se vše ukazuje';
+  // sebe-dotek: šipka do sebe
+  el('path',{d:'M220,232 C266,232 266,196 232,196',fill:'none',stroke:'#e0452c','stroke-width':2.4,
+    'marker-end':'url(#arr)',filter:'url(#glow)'},g);
+  const defs=el('defs',{},svg);
+  const mk=el('marker',{id:'arr',markerWidth:'8',markerHeight:'8',refX:'6',refY:'3',orient:'auto'},defs);
+  el('path',{d:'M0,0 L6,3 L0,6 Z',fill:'#e0452c'},mk);
+  el('text',{x:220,y:262,'text-anchor':'middle',fill:'#e0452c','font-size':15,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='vimarśa';
+  el('text',{x:220,y:280,'text-anchor':'middle',fill:'#8f8ba3','font-size':9.5,
+    'font-family':'Karla, sans-serif'},g).textContent='sebe-dotek světla: „jsem"';
+  // rovnice
+  el('text',{x:220,y:344,'text-anchor':'middle',fill:'#d9a441','font-size':12,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='Śiva = prakāśa · Śakti = vimarśa · svět = jejich hra (svātantrya)';
+  el('text',{x:220,y:368,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,
+    'font-family':'Karla, sans-serif'},g).textContent='vědomí nelze popřít — každé popření svítí';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function waveScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Spanda — puls vědomí'});
+  const g=el('g',{class:'pulse'},svg);
+  el('line',{x1:26,y1:250,x2:414,y2:250,stroke:'#2c2a45','stroke-width':1},g);
+  el('text',{x:412,y:268,'text-anchor':'end',fill:'#8f8ba3','font-size':9.5,'letter-spacing':'2',
+    'font-family':'Karla, sans-serif'},g).textContent='MOŘE · VĚDOMÍ';
+  // tři vlny různé amplitudy
+  const w=(x0,amp,col)=>el('path',{d:`M${x0},250 C${x0+22},250 ${x0+26},${250-amp} ${x0+45},${250-amp} C${x0+64},${250-amp} ${x0+68},250 ${x0+90},250`,
+    fill:'none',stroke:col,'stroke-width':2.2,opacity:.9},g);
+  w(40,60,'#8fb4d9'); w(150,130,'#e0452c'); w(280,36,'#e9e7f2');
+  el('text',{x:85,y:172,'text-anchor':'middle',fill:'#8fb4d9','font-size':10,'font-family':'Karla, sans-serif'},g).textContent='myšlenka';
+  el('text',{x:195,y:102,'text-anchor':'middle',fill:'#e0452c','font-size':10,'font-family':'Karla, sans-serif'},g).textContent='emoce';
+  el('text',{x:325,y:198,'text-anchor':'middle',fill:'#e9e7f2','font-size':10,'font-family':'Karla, sans-serif'},g).textContent='vjem';
+  // body vzniku/zániku
+  [[40,'vzniká'],[130,'vrací se']].forEach(([x,t])=>{});
+  el('text',{x:220,y:318,'text-anchor':'middle',fill:'#d9a441','font-size':12,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='každá vlna nese podpis moře — čím vyšší, tím čitelnější';
+  el('text',{x:220,y:342,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,
+    'font-family':'Karla, sans-serif'},g).textContent='Spandakārikā I.22: hněv · radost · panika · útěk — puls je nahý';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function cascadeScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'36 tattev'});
+  const g=el('g',{class:'pulse'},svg);
+  const rows=[['1–5 · čiré vědomí a energie','Śiva · Śakti · sadāśiva…','#e9e7f2'],
+              ['6–11 · māyā a pět závojů','kañcuky: moc·vědění·plnost·čas·místo','#8fb4d9'],
+              ['12–13 · osoba a příroda','puruṣa · prakṛti','#d9a441'],
+              ['14–16 · vnitřní nástroj','buddhi · ahaṃkāra · manas','#d9a441'],
+              ['17–31 · smysly a schopnosti','5 smyslů · 5 činností · 5 jemných','#e0452c'],
+              ['32–36 · živly','prostor · vzduch · oheň · voda · země','#e0452c']];
+  rows.forEach(([t,sub,c],i)=>{
+    const y=74+i*54, w=150+i*38;
+    el('rect',{x:220-w/2,y:y-16,width:w,height:40,rx:6,fill:c,opacity:.1},g);
+    el('rect',{x:220-w/2,y:y-16,width:w,height:40,rx:6,fill:'none',stroke:c,'stroke-width':1,opacity:.7},g);
+    el('text',{x:220,y:y-1,'text-anchor':'middle',fill:'#eae8f0','font-size':10.5,'font-family':'Karla, sans-serif'},g).textContent=t;
+    el('text',{x:220,y:y+14,'text-anchor':'middle',fill:'#8f8ba3','font-size':9,'font-style':'italic',
+      'font-family':'Cormorant Garamond, serif'},g).textContent=sub;
+  });
+  el('text',{x:64,y:210,'text-anchor':'middle',fill:'#8f8ba3','font-size':9.5,'letter-spacing':'2',
+    transform:'rotate(-90 64 210)','font-family':'Karla, sans-serif'},g).textContent='SESTUP ↓ · PRAXE ↑';
+  el('text',{x:220,y:414,'text-anchor':'middle',fill:'#d9a441','font-size':11,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='mapa vrstev jediného okamžiku — ne kosmologie k věření';
+  progArc(g,212);
+  addGlow(svg);
+  return svg;
+}
+
+function symbolsScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Symboly a stavy'});
+  const g=el('g',{class:'pulse'},svg);
+  const rows=[['Śiva','čiré vědomí','#e9e7f2'],['Śakti','energie · pozornost','#e0452c'],
+              ['Kālī','dynamika vzniku a zániku vjemů','#e0452c'],['Bhairava','úžas beze slov','#8fb4d9'],
+              ['mātṛkā','síla řeči, jež svazuje i osvobozuje','#d9a441']];
+  rows.forEach(([sk,cz,c],i)=>{
+    const y=92+i*56;
+    el('text',{x:120,y,'text-anchor':'end',fill:c,'font-size':17,'font-style':'italic',
+      'font-family':'Cormorant Garamond, serif'},g).textContent=sk;
+    el('line',{x1:140,y1:y-4,x2:212,y2:y-4,stroke:'#2c2a45','stroke-width':1,'marker-end':'url(#arr2)'},g);
+    el('text',{x:226,y,fill:'#eae8f0','font-size':11.5,'font-family':'Karla, sans-serif'},g).textContent=cz;
+  });
+  const defs=el('defs',{},svg);
+  const mk=el('marker',{id:'arr2',markerWidth:'8',markerHeight:'8',refX:'6',refY:'3',orient:'auto'},defs);
+  el('path',{d:'M0,0 L6,3 L0,6 Z',fill:'#2c2a45'},mk);
+  el('text',{x:220,y:396,'text-anchor':'middle',fill:'#d9a441','font-size':11,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='sanskrt = odborná terminologie duševních stavů, jako latina v anatomii';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function ladderScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Čtyři upāye'});
+  const g=el('g',{class:'pulse'},svg);
+  const rows=[['anupāya','bez-cesta: rozpoznání bleskem','#e9e7f2'],
+              ['śāmbhavopāya','čiré spočinutí bez myšlenky','#8fb4d9'],
+              ['śāktopāya','mysl · vhled · emoce','#e0452c'],
+              ['āṇavopāya','tělo · dech · smysly · mantra','#d9a441']];
+  rows.forEach(([t,sub,c],i)=>{
+    const y=86+i*74, w=190+i*46;
+    el('rect',{x:220-w/2,y:y-20,width:w,height:52,rx:8,fill:c,opacity:.09},g);
+    el('rect',{x:220-w/2,y:y-20,width:w,height:52,rx:8,fill:'none',stroke:c,'stroke-width':1.2,opacity:.85},g);
+    el('text',{x:220,y:y-1,'text-anchor':'middle',fill:c,'font-size':14,'font-style':'italic',
+      'font-family':'Cormorant Garamond, serif'},g).textContent=t;
+    el('text',{x:220,y:y+18,'text-anchor':'middle',fill:'#c9c5d6','font-size':10,
+      'font-family':'Karla, sans-serif'},g).textContent=sub;
+  });
+  el('text',{x:60,y:230,'text-anchor':'middle',fill:'#8f8ba3','font-size':9.5,'letter-spacing':'2',
+    transform:'rotate(-90 60 230)','font-family':'Karla, sans-serif'},g).textContent='JEMNĚJŠÍ ↑';
+  el('text',{x:220,y:404,'text-anchor':'middle',fill:'#d9a441','font-size':11,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='nefunguje-li technika, je špatně párování, ne vy — sestupte o patro';
+  progArc(g,212);
+  addGlow(svg);
+  return svg;
+}
+
+function madhyaScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Dech a střed'});
+  const g=el('g',{class:'pulse'},svg);
+  // dechová sinusoida s úvratěmi
+  el('path',{d:'M30,300 C90,300 100,120 160,120 C220,120 230,300 290,300 C350,300 360,120 414,120',
+    fill:'none',stroke:'#8fb4d9','stroke-width':2.4},g);
+  // úvratě
+  [[160,120,'horní úvrať'],[290,300,'dolní úvrať']].forEach(([x,y,t])=>{
+    el('circle',{cx:x,cy:y,r:9,fill:'#131224',stroke:'#d9a441','stroke-width':2,filter:'url(#glow)'},g);
+    el('text',{x,y:y+(y<200?-20:30),'text-anchor':'middle',fill:'#d9a441','font-size':10.5,
+      'font-family':'Karla, sans-serif'},g).textContent=t;
+  });
+  el('text',{x:95,y:210,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,'font-family':'Karla, sans-serif'},g).textContent='nádech';
+  el('text',{x:225,y:210,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,'font-family':'Karla, sans-serif'},g).textContent='výdech';
+  el('text',{x:220,y:368,'text-anchor':'middle',fill:'#d9a441','font-size':12,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='v obratech se dech sám zastaví — vstupte pozorností, nic nedržte';
+  el('text',{x:220,y:392,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,
+    'font-family':'Karla, sans-serif'},g).textContent='madhya · střed „září Bhairavī" (VBT 25–26)';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function gapScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Spára mezi myšlenkami'});
+  const g=el('g',{class:'pulse'},svg);
+  // dvě myšlenkové vlny a spára
+  el('path',{d:'M40,240 C80,240 84,150 130,150 C176,150 180,240 214,240',fill:'none',stroke:'#8fb4d9','stroke-width':2.2},g);
+  el('path',{d:'M262,240 C300,240 304,164 348,164 C392,164 396,240 424,240',fill:'none',stroke:'#8fb4d9','stroke-width':2.2,opacity:.7},g);
+  el('text',{x:128,y:132,'text-anchor':'middle',fill:'#8fb4d9','font-size':10,'font-family':'Karla, sans-serif'},g).textContent='myšlenka doznívá';
+  el('text',{x:346,y:146,'text-anchor':'middle',fill:'#8fb4d9','font-size':10,opacity:.8,'font-family':'Karla, sans-serif'},g).textContent='další se rodí';
+  // spára
+  el('rect',{x:216,y:150,width:44,height:110,rx:8,fill:'#e9e7f2',opacity:.05},g);
+  el('rect',{x:216,y:150,width:44,height:110,rx:8,fill:'none',stroke:'#e9e7f2','stroke-width':1.4,filter:'url(#glow)'},g);
+  el('text',{x:238,y:290,'text-anchor':'middle',fill:'#e9e7f2','font-size':11,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='spára — bdělost bez obsahu';
+  el('text',{x:220,y:352,'text-anchor':'middle',fill:'#d9a441','font-size':12,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='chytej konce, ne začátky — a nepozoruj mezeru: buď jí';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function skyScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Bhairavī mudrā'});
+  const g=el('g',{class:'pulse'},svg);
+  // horizont
+  el('line',{x1:30,y1:270,x2:410,y2:270,stroke:'#2c2a45','stroke-width':1.4},g);
+  // oko
+  el('path',{d:'M140,190 C180,150 260,150 300,190 C260,230 180,230 140,190 Z',
+    fill:'none',stroke:'#e9e7f2','stroke-width':2,filter:'url(#glow)'},g);
+  el('circle',{cx:220,cy:190,r:16,fill:'none',stroke:'#8fb4d9','stroke-width':2},g);
+  el('circle',{cx:220,cy:190,r:4,fill:'#e9e7f2'},g);
+  // periferie — paprsky do stran
+  [[110,190,-1],[330,190,1]].forEach(([x,y,s])=>{
+    for(let i=0;i<3;i++) el('line',{x1:x,y1:y-14+i*14,x2:x+s*34,y2:y-20+i*20,stroke:'#8fb4d9','stroke-width':1,opacity:.5},g);
+  });
+  el('text',{x:220,y:130,'text-anchor':'middle',fill:'#8f8ba3','font-size':10.5,
+    'font-family':'Karla, sans-serif'},g).textContent='oči dokořán · pohled měkký, nikam';
+  el('text',{x:220,y:320,'text-anchor':'middle',fill:'#d9a441','font-size':12,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='vidíš vše — nedíváš se na nic · pozornost spočívá ve vnímajícím';
+  el('text',{x:220,y:344,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,
+    'font-family':'Karla, sans-serif'},g).textContent='vnitřek a vnějšek přestávají být dvě místnosti';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function sensesScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Rasa — smysly jako brána'});
+  const g=el('g',{class:'pulse'},svg);
+  const S=[['zrak',0],['sluch',72],['chuť',144],['hmat',216],['čich',288]];
+  S.forEach(([t,a])=>{
+    const[x,y]=polar(220,200,130,a);
+    el('circle',{cx:x,cy:y,r:26,fill:'none',stroke:'#e0452c','stroke-width':1.4,opacity:.85},g);
+    el('text',{x,y:y+4,'text-anchor':'middle',fill:'#eae8f0','font-size':10.5,'font-family':'Karla, sans-serif'},g).textContent=t;
+    const[x2,y2]=polar(220,200,42,a);
+    el('line',{x1:x,y1:y,x2:x2,y2:y2,stroke:'#e0452c','stroke-width':1,opacity:.5,'stroke-dasharray':'3 5'},g);
+  });
+  el('circle',{cx:220,cy:200,r:36,fill:'#e9e7f2',opacity:.06},g);
+  el('circle',{cx:220,cy:200,r:36,fill:'none',stroke:'#e9e7f2','stroke-width':1.4,filter:'url(#glow)'},g);
+  el('text',{x:220,y:196,'text-anchor':'middle',fill:'#e9e7f2','font-size':11,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='kdo';
+  el('text',{x:220,y:212,'text-anchor':'middle',fill:'#e9e7f2','font-size':11,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='vychutnává?';
+  el('text',{x:220,y:388,'text-anchor':'middle',fill:'#d9a441','font-size':12,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='camatkāra: úžas nad krásou = záblesk sebe-chuti vědomí';
+  progArc(g,208);
+  addGlow(svg);
+  return svg;
+}
+
+function mantraScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Haṃsa — mantra dechu'});
+  const g=el('g',{class:'pulse'},svg);
+  // dechová smyčka
+  el('ellipse',{cx:220,cy:210,rx:140,ry:86,fill:'none',stroke:'#8fb4d9','stroke-width':2},g);
+  el('text',{x:220,y:104,'text-anchor':'middle',fill:'#e0452c','font-size':22,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif',filter:'url(#glow)'},g).textContent='haṃ';
+  el('text',{x:220,y:330,'text-anchor':'middle',fill:'#8fb4d9','font-size':22,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif',filter:'url(#glow)'},g).textContent='sa';
+  el('text',{x:78,y:214,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,'font-family':'Karla, sans-serif'},g).textContent='nádech';
+  el('text',{x:362,y:214,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,'font-family':'Karla, sans-serif'},g).textContent='výdech';
+  el('text',{x:220,y:206,'text-anchor':'middle',fill:'#e9e7f2','font-size':16,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='ahám';
+  el('text',{x:220,y:226,'text-anchor':'middle',fill:'#8f8ba3','font-size':9.5,
+    'font-family':'Karla, sans-serif'},g).textContent='„já" — jméno sebe-doteku vědomí';
+  el('text',{x:220,y:394,'text-anchor':'middle',fill:'#d9a441','font-size':11.5,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='dech ji recituje 21 600× denně — praxe jen přidává pozornost';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function benefitsScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Duševní benefity'});
+  const g=el('g',{class:'pulse'},svg);
+  const rows=[['ruminace ↓','spára myšlenek','#8fb4d9'],['reaktivita ↓','emoce jako energie','#e0452c'],
+              ['radost ↑','rasa · vychutnávání','#d9a441'],['sebeobraz','plnost místo vady','#e9e7f2']];
+  rows.forEach(([a,b,c],i)=>{
+    const y=100+i*66;
+    el('circle',{cx:120,cy:y,r:7,fill:c,opacity:.9},g);
+    el('text',{x:142,y:y+4,fill:'#eae8f0','font-size':13,'font-family':'Karla, sans-serif','font-weight':600},g).textContent=a;
+    el('text',{x:142,y:y+22,fill:'#8f8ba3','font-size':10,'font-family':'Karla, sans-serif'},g).textContent=b;
+  });
+  el('text',{x:220,y:396,'text-anchor':'middle',fill:'#d9a441','font-size':12,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='pūrṇatā: nejste rozbití — jste zahalení; praxe neopravuje, odhaluje';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function bodyScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Fyziologické benefity'});
+  const g=el('g',{class:'pulse'},svg);
+  // silueta
+  el('circle',{cx:190,cy:96,r:22,fill:'none',stroke:'#2c2a45','stroke-width':1.4},g);
+  el('path',{d:'M172,130 C150,160 144,220 148,280 C151,320 172,338 190,340 C208,338 229,320 232,280 C236,220 230,160 208,130',
+    fill:'none',stroke:'#2c2a45','stroke-width':1.4},g);
+  const P=[[190,96,'mozek: pozornost stabilnější · ruminační síť tišší','#8fb4d9'],
+           [190,205,'srdce: variabilita rytmu ↑ · tep a tlak ↓','#e0452c'],
+           [190,258,'dech: vagový tonus ↑ · poplach ↓','#d9a441']];
+  P.forEach(([x,y,t,c])=>{
+    el('circle',{cx:x,cy:y,r:9,fill:'#131224',stroke:c,'stroke-width':2,filter:'url(#glow)'},g);
+    el('line',{x1:x+12,y1:y,x2:262,y2:y,stroke:'#2c2a45','stroke-width':.8},g);
+    el('text',{x:268,y:y+3,fill:'#d9d5e2','font-size':10,'font-family':'Karla, sans-serif'},g).textContent=t;
+  });
+  el('text',{x:220,y:396,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,
+    'font-family':'Karla, sans-serif'},g).textContent='doloženo pro rodiny technik (dech · meditace) — KŠ specificky zkoumán nebyl';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function vennScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Srovnání s buddhismem'});
+  const g=el('g',{class:'pulse'},svg);
+  el('circle',{cx:165,cy:200,r:105,fill:'#8fb4d9',opacity:.08},g);
+  el('circle',{cx:165,cy:200,r:105,fill:'none',stroke:'#8fb4d9','stroke-width':1.6},g);
+  el('circle',{cx:275,cy:200,r:105,fill:'#e0452c',opacity:.08},g);
+  el('circle',{cx:275,cy:200,r:105,fill:'none',stroke:'#e0452c','stroke-width':1.6},g);
+  el('text',{x:120,y:150,'text-anchor':'middle',fill:'#8fb4d9','font-size':13,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='buddhismus';
+  el('text',{x:120,y:172,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,'font-family':'Karla, sans-serif'},g).textContent='śūnyatā · bez esence';
+  el('text',{x:322,y:150,'text-anchor':'middle',fill:'#e0452c','font-size':13,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='Trika';
+  el('text',{x:322,y:172,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,'font-family':'Karla, sans-serif'},g).textContent='cit · plnost vědomí';
+  el('text',{x:220,y:196,'text-anchor':'middle',fill:'#e9e7f2','font-size':10.5,'font-family':'Karla, sans-serif'},g).textContent='nedualita · tantra';
+  el('text',{x:220,y:212,'text-anchor':'middle',fill:'#e9e7f2','font-size':10.5,'font-family':'Karla, sans-serif'},g).textContent='bdělá jasnost';
+  el('text',{x:220,y:228,'text-anchor':'middle',fill:'#e9e7f2','font-size':10.5,'font-family':'Karla, sans-serif'},g).textContent='tytéž metody';
+  el('text',{x:220,y:368,'text-anchor':'middle',fill:'#d9a441','font-size':12,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='prázdnota jevů, či plnost vědomí — volba mapy, možná temperamentu';
+  progArc(g,206);
+  addGlow(svg);
+  return svg;
+}
+
+function circuitsScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Osm okruhů a Trika'});
+  const g=el('g',{class:'pulse'},svg);
+  const rows=[['1–4','přežití · emoce · jazyk · role','paśu — vědomí pod závoji','#8f8ba3'],
+              ['5','neurosomatický — tělo blaží','āṇava · rasa · tummo-teplo','#d9a441'],
+              ['6','metaprogramování','vimarśa · mantra · svātantrya','#e0452c'],
+              ['7','neurogenetický · archetypy','božstva jako programy','#8fb4d9'],
+              ['8','nelokální','Śiva · turīya · svědek','#e9e7f2']];
+  rows.forEach(([n,l,r,c],i)=>{
+    const y=84+i*62;
+    el('circle',{cx:74,cy:y,r:16,fill:'none',stroke:c,'stroke-width':1.6},g);
+    el('text',{x:74,y:y+4,'text-anchor':'middle',fill:c,'font-size':11,'font-weight':600,'font-family':'Karla, sans-serif'},g).textContent=n;
+    el('text',{x:104,y:y-2,fill:'#eae8f0','font-size':10.5,'font-family':'Karla, sans-serif'},g).textContent=l;
+    el('text',{x:104,y:y+15,fill:c,'font-size':10,'font-style':'italic','font-family':'Cormorant Garamond, serif'},g).textContent='≈ '+r;
+  });
+  el('text',{x:220,y:408,'text-anchor':'middle',fill:'#d9a441','font-size':11,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='„reality tunnels" = māyā s kañcukami, řečeno kalifornsky';
+  progArc(g,212);
+  addGlow(svg);
+  return svg;
+}
+
+function historyScene(){
+  const svg=el('svg',{viewBox:'0 0 440 440',role:'img','aria-label':'Časová osa'});
+  const g=el('g',{class:'pulse'},svg);
+  el('line',{x1:60,y1:220,x2:400,y2:220,stroke:'#2c2a45','stroke-width':2},g);
+  const E=[[70,'850–1050','rozkvět: Vasugupta → Abhinavagupta','#e0452c',-1],
+           [150,'14. stol.','islámská vláda · linie do ticha','#8f8ba3',1],
+           [230,'1911–40','KSTS: rukopisy poprvé tiskem','#d9a441',-1],
+           [300,'1991','† Lakšman Džú, poslední mistr linie','#8fb4d9',1],
+           [372,'1990–dnes','překlady · Sanderson · Wallis','#e9e7f2',-1]];
+  E.forEach(([x,d,t,c,s])=>{
+    el('circle',{cx:x,cy:220,r:6,fill:c},g);
+    const y=220+s*46;
+    el('line',{x1:x,y1:220+s*10,x2:x,y2:y-s*8,stroke:'#2c2a45','stroke-width':.8},g);
+    el('text',{x,y:y,'text-anchor':'middle',fill:c,'font-size':10.5,'font-weight':600,'font-family':'Karla, sans-serif'},g).textContent=d;
+    el('text',{x,y:y+s*15,'text-anchor':'middle',fill:'#9a96ad','font-size':8.8,'font-family':'Karla, sans-serif'},g).textContent=t;
+  });
+  el('text',{x:220,y:340,'text-anchor':'middle',fill:'#d9a441','font-size':11.5,'font-style':'italic',
+    'font-family':'Cormorant Garamond, serif'},g).textContent='pět filtrů: geografie · dějiny · jazyk · esoterika · ideologie';
+  el('text',{x:220,y:364,'text-anchor':'middle',fill:'#8f8ba3','font-size':10,
+    'font-family':'Karla, sans-serif'},g).textContent='Západ dostal Triku o století později než védántu a zen';
+  progArc(g,210);
+  addGlow(svg);
+  return svg;
+}
+
+const SCENES={tridentDim:()=>trident('dim'),tridentFull:()=>trident('full'),trika:trikaScene,
+  wave:waveScene,cascade:cascadeScene,symbols:symbolsScene,ladder:ladderScene,madhya:madhyaScene,
+  gap:gapScene,sky:skyScene,senses:sensesScene,mantra:mantraScene,benefits:benefitsScene,
+  body:bodyScene,venn:vennScene,circuits:circuitsScene,history:historyScene};
+
+/* ─────────────── ENGINE ─────────────── */
+let idx=0, playing=false, timer=null, tStart=0;
+const isTouch = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
+const DUR=30000;
+const $=id=>document.getElementById(id);
+
+function render(){
+  const s=slides[idx];
+  const pr=$('progress'); pr.innerHTML='';
+  slides.forEach((sl,i)=>{const d=document.createElement('div');
+    d.className='seg'+(i<idx?' done':'')+(i===idx?' now':'');pr.appendChild(d);});
+  $('koloLabel').innerHTML=`<b style="color:${GROUP[s.grp].hex}">●</b>&nbsp;&nbsp;${GROUP[s.grp].name}`;
+  const st=$('stage'); st.innerHTML=''; st.appendChild(SCENES[s.scene]());
+  const c=$('content');
+  let html=`<div class="eyebrow"><span class="num">${idx+1} / ${slides.length}</span>${s.eyebrow}</div>
+    <h1>${s.title}</h1><div class="subtitle">${s.subtitle||''}</div>`;
+  if(s.meta){
+    html+=`<div class="meta"><div>opakování<b>${s.meta.op}</b></div>
+      <div>délka<b>${s.meta.dl}</b></div><div>hlavní benefit<b>${s.meta.ben}</b></div></div>`;
+  }
+  s.blocks.forEach(([h,cls,txt])=>{
+    html+=`<div class="block">${h?`<h3 class="${cls}">${h}</h3>`:''}<p>${txt}</p></div>`;
+  });
+  html+=`<div class="hint-x">${isTouch?'Podrobný výklad otevře tlačítko <b>Výklad</b> dole':'<kbd>X</kbd> otevře podrobný výklad této karty'}</div>`;
+  c.innerHTML=html; c.scrollTop=0;
+  if(playing) startTimer();
+  updateArc(0);
+}
+function updateArc(f){
+  const a=document.getElementById('progArc');
+  if(a){const L=parseFloat(a.getAttribute('stroke-dasharray'));a.setAttribute('stroke-dashoffset',L*(1-f));}
+}
+function startTimer(){
+  stopTimer(); tStart=performance.now();
+  function tick(now){const f=(now-tStart)/DUR;
+    if(f>=1){next(true);return;}
+    updateArc(f); timer=requestAnimationFrame(tick);}
+  timer=requestAnimationFrame(tick);
+}
+function stopTimer(){if(timer){cancelAnimationFrame(timer);timer=null;}updateArc(0);}
+function next(auto){if(idx<slides.length-1){idx++;render();}else if(auto){setPlaying(false);}}
+function prev(){if(idx>0){idx--;render();}}
+function setPlaying(p){
+  playing=p;const lab=$('stateLabel');
+  document.getElementById('app').classList.toggle('paused',!p);
+  if(p){lab.textContent='▶ běží — manuál plyne sám';lab.className='state run';startTimer();}
+  else{lab.textContent=isTouch?'⏸ zastaveno — švihem listujete':'⏸ zastaveno — ovládáte ručně';
+    lab.className='state pause';stopTimer();}
+}
+function toggleOverlay(force){
+  const o=$('overlay');
+  const open=force!==undefined?force:!o.classList.contains('open');
+  if(open){
+    const s=slides[idx],d=s.detail;if(!d)return;
+    const was=playing;if(playing)setPlaying(false);
+    o.dataset.resume=was?'1':'0';
+    $('overlayCard').innerHTML=
+      `<div class="eyebrow" style="color:${GROUP[s.grp].hex}">${s.eyebrow} · výklad</div>
+       <h2>${d.title}</h2>`+d.paras.map(p=>`<p>${p}</p>`).join('')+
+      `<button class="ov-close-btn" onclick="toggleOverlay(false)">✕ &nbsp;Zavřít výklad</button>`+
+      (isTouch?'':`<div class="overlay-close"><kbd>X</kbd> nebo <kbd>Esc</kbd> zavře výklad</div>`);
+    o.classList.add('open');
+  }else{
+    o.classList.remove('open');
+    if(o.dataset.resume==='1')setPlaying(true);
+  }
+}
+document.addEventListener('keydown',e=>{
+  const o=$('overlay').classList.contains('open');
+  if(e.code==='Space'){e.preventDefault();if(!o)setPlaying(!playing);}
+  else if(e.key==='ArrowRight'){if(!o)next();}
+  else if(e.key==='ArrowLeft'){if(!o)prev();}
+  else if(e.key==='x'||e.key==='X'){toggleOverlay();}
+  else if(e.key==='Escape'){if(o)toggleOverlay(false);}
+});
+$('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')toggleOverlay(false);});
+$('bPrev').onclick=()=>prev();
+$('bNext').onclick=()=>next();
+$('bPlay').onclick=()=>setPlaying(!playing);
+$('bX').onclick=()=>toggleOverlay();
+let tx0=0,ty0=0,t0=0;
+const mainEl=document.querySelector('main');
+mainEl.addEventListener('touchstart',e=>{const t=e.changedTouches[0];tx0=t.clientX;ty0=t.clientY;t0=Date.now();},{passive:true});
+mainEl.addEventListener('touchend',e=>{const t=e.changedTouches[0];
+  const dx=t.clientX-tx0,dy=t.clientY-ty0,dt=Date.now()-t0;
+  if(dt<700&&Math.abs(dx)>55&&Math.abs(dx)>2*Math.abs(dy)){if(dx<0)next();else prev();}},{passive:true});
+$('stage').addEventListener('click',()=>setPlaying(!playing));
+let oy0=0,ox0=0;const ovl=$('overlay');
+ovl.addEventListener('touchstart',e=>{const t=e.changedTouches[0];ox0=t.clientX;oy0=t.clientY;},{passive:true});
+ovl.addEventListener('touchend',e=>{const t=e.changedTouches[0];
+  const dx=t.clientX-ox0,dy=t.clientY-oy0;
+  if(dy>90&&Math.abs(dy)>2*Math.abs(dx)&&$('overlayCard').scrollTop<=0)toggleOverlay(false);},{passive:true});
+
+document.getElementById('app').classList.add('paused');
+render();
+</script>
+</body>
+</html>
